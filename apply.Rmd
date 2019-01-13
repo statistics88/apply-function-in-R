@@ -1,0 +1,77 @@
+---
+title: "Apply Function"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+There are lot of uses of apply familiy in R . The functions in apply family are very good alternative to for loop. Here I am going to talk about apply function.  Apply function is useful when we need to peform somthing each each column in a 2 dimensional matrix , 3 dimensional matrix or a 3 dimensional list. 
+
+Lets generate this random data first.
+
+```{r }
+x1=rnorm(30,0,1)
+x2=rt(30,2)
+
+x3=data.frame(x1,x2)
+
+```
+So in this new data frame , there are 2 columns. Lets say that you need to perform some operation for each column in the data frame.
+
+As an example let calculate the mean and variance of each column. We can do this using apply function as follows.
+
+```{r}
+
+apply(x3,2,mean)
+apply(x3,2,var)
+```
+
+Here 2 indicates  that we are doing  columnswise operations . If we are going to do some thing row wise then  it is as follows.
+Consider calculating rowwise mean and varaince.
+
+```{r}
+apply(x3,1,mean)
+
+```
+
+Similar to this , we can perform any user defined function. For example here we have plotted each column as follows,
+
+
+```{r}
+par(mfrow = c(1,2) )
+apply(x3,2, function(x)
+plot(x))
+```
+
+
+
+Apply function is very useful when we have a 3 dimensional martix or a list. Cosnider the following example. 
+For this you should first install mvtnorm package to R.
+
+
+```{r}
+library("mvtnorm", lib.loc="~/R/R-3.5.1/library") #first install mvtnorm package
+mu=c(0,1) #mean vector
+sig=matrix(c(1,0.8,0.8,1),nrow = 2,byrow = T) #covariance matrix
+data1=rmvnorm(30,mu, sig)
+data2=rmvt(30, sig,df=2)
+data=list(data1,data2 )
+
+```
+
+In this example we have generated a 3 dimensional matrix with bivariate normal and bivariate t data corresponding to a mean vector and a covariance matrix. If we need to  perform the shapiro wilk normality test for each dimension, it can be done as follows, 
+
+
+
+```{r}
+lapply(data, function(x) 
+                apply(x,2,function(y)
+                          shapiro.test(y)$p.value))
+
+```
+
+Here we have used the lapply function because the data is in a form of a list.
